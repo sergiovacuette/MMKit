@@ -13,10 +13,10 @@ class MMkit
 {
 public:
     // IR thresholds
-    #define IR_FRONT_L_THRESHOLD 55  //38
-    #define IR_FRONT_R_THRESHOLD 55  //38
-    #define IR_LEFT_THRESHOLD    78  //18
-    #define IR_RIGHT_THRESHOLD   75
+    #define IR_FRONT_L_THRESHOLD 95  //38
+    #define IR_FRONT_R_THRESHOLD 95  //38
+    #define IR_LEFT_THRESHOLD    58  //18
+    #define IR_RIGHT_THRESHOLD   45
     
     #define _WHEEL_SPACING 81.0 //mm
     #define _WHEEL_RADIUS 27.5 //mm
@@ -52,7 +52,8 @@ public:
     void setupMMkit();
     void run();
     void stop();
-    
+    void setIR_LEFT(float LeftCorrection);
+    void setIR_RIGHT(float RightCorrection);
     ///Description: Continuously checks for the start signal (hand movement close to the left forward distance sensor where a sequence of high, low and high distances are detected)
     ///Input parameter: none
     ///Output parameter: none 

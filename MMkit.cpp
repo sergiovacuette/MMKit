@@ -40,6 +40,8 @@ boolean Running=false;
 
 int IRsensorsValues[4];
 int reading=0;
+int _right_Correction=0;//-60
+int _left_Correction=0;  //90
 
 float _leftSpeed = 474.0; //default _leftSpeed 500
 float _rightSpeed = 474.0; //default _rightSpeed 500
@@ -99,18 +101,19 @@ void MMkit::testIRSensors() {
      Serial.print(i);
      Serial.print(" = ");
      Serial.println(IRsensorsValues[i]);
-     
+     Serial.println(IRsensorsValues[1]-_right_Correction);
+     Serial.println(IRsensorsValues[2]-_left_Correction);
   } 
 }
 
-/*void MMkit::setWHEEL_SPACING(float WHEEL_SPACING){
- _WHEEL_SPACING = WHEEL_SPACING*10;    
+void MMkit::setIR_LEFT(float LeftCorrection){
+ _left_Correction = LeftCorrection;    
  }
  
- void MMkit::setWHEEL_RADIUS(float WHEEL_RADIUS){
- _WHEEL_RADIUS = WHEEL_RADIUS*10;    
+ void MMkit::setIR_RIGHT(float RightCorrection){
+ _right_Correction = RightCorrection;    
  }
- */
+ 
 void MMkit::setForwardMotionSpeed (float speed) {
      if(speed<40){
      speed=158*speed;
@@ -263,8 +266,22 @@ void MMkit::waitForStart(){
 }
 
 void MMkit::run() {
-  _motorLeft.run();
-  _motorRight.run(); 
+     //Serial.println(_motorLeft.distanceToGo());
+     //Serial.println(_motorRight.distanceToGo());
+     if(_motorLeft.distanceToGo() >0){
+        while ((_motorLeft.distanceToGo() > 0) || (_motorRight.distanceToGo() < 0)) {                           
+               _motorLeft.run();
+               _motorRight.run(); 
+       }
+     }
+     if(_motorRight.distanceToGo()>0){
+        while ((_motorLeft.distanceToGo() < 0) || (_motorRight.distanceToGo() > 0)) {                           
+               _motorLeft.run();
+               _motorRight.run(); 
+       }
+     
+     }
+
 }
 void MMkit::stop() {
   _motorLeft.move(0);
@@ -293,16 +310,16 @@ void MMkit::runSpeed() {
   //if ((_motorLeft.distanceToGo() > 210) && (_motorRight.distanceToGo() < 360)) { // ensures that's a good zone to perform correction
   switch(current_cell.wall){
   case  B00000110:  // if there is left and right wall 
-    _motorLeft.setSpeed(_leftSpeed+((6000 / (IRsensorsValues[1]- 17) - 2 )-(6000 / (IRsensorsValues[2]- 17) - 2) )*5);
-    _motorRight.setSpeed(+(_rightSpeed-((6000 / (IRsensorsValues[1]- 17) - 2 )-(6000 / (IRsensorsValues[2]- 17) - 2) )*5));
+    _motorLeft.setSpeed(_leftSpeed+((6000 / (IRsensorsValues[1]- 17) - 2 )-(6000 / (IRsensorsValues[2]- 17) - 2)-_left_Correction )*5);
+    _motorRight.setSpeed(+(_rightSpeed-((6000 / (IRsensorsValues[1]- 17) - 2 )-(6000 / (IRsensorsValues[2]- 17) - 2)-_left_Correction )*5));
     break;
   case B00000100:  //Left wall
     _motorRight.setSpeed(+(_rightSpeed-(67-(6000 / (IRsensorsValues[2]- 17) - 2 ))*5));
     _motorLeft.setSpeed(_leftSpeed+(67-(6000 / (IRsensorsValues[2]- 17) - 2))*5 );
     break;
   case B00000010:  //Right wall
-    _motorRight.setSpeed(+(_rightSpeed+(65-(6000 / (IRsensorsValues[1]- 17) - 2 ))*5));
-    _motorLeft.setSpeed(_leftSpeed-(65-(6000 / (IRsensorsValues[1]- 17) - 2))*5 );
+    _motorRight.setSpeed(+(_rightSpeed+(65-(6000 / (IRsensorsValues[1]- 17) - 2 )-_right_Correction)*5));
+    _motorLeft.setSpeed(_leftSpeed-(65-(6000 / (IRsensorsValues[1]- 17) - 2)-_right_Correction)*5 );
     break;
   default:
     _motorLeft.setSpeed(_leftSpeed);
@@ -320,7 +337,7 @@ void MMkit::runSpeed() {
     while (_motorLeft.distanceToGo() < 0 || _motorRight.distanceToGo() < 0){
       //Serial.println(_motorLeft.distanceToGo());  //for debug purposes
       //Serial.println(_motorRight.distanceToGo()); //for debug purposes
-      analogWrite(13,175);
+     // analogWrite(13,175);
       _motorLeft.runSpeed();
       _motorRight.runSpeed();
     } 

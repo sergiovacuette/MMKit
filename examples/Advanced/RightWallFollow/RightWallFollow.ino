@@ -39,7 +39,7 @@ void setup(){
   Grigoras.current_cell.theta = ANGLE_90; // Starts pointing up
   Grigoras.setupMMkit();                // Starts the MMkit
   Grigoras.goForward(18.0);              //distance to go forward in cm (18.0) means 18.0cm
-  Grigoras.setForwardMotionSpeed(474);  //sets forward speed
+  Grigoras.setForwardMotionSpeed(7);  //sets forward speed
   Grigoras.waitForStart();            // waits for hand passing front right sensors
 }
 
@@ -66,7 +66,7 @@ void robotMove(void)
   switch (stateMovement) {
   case STATE_MOV_IDLE:
     Grigoras.stop();
-    delay(200);
+   // delay(200);
     stateMovement = toMove;
     break;
   case STATE_MOV_FRONT:
