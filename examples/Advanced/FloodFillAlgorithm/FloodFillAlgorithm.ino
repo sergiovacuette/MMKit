@@ -56,14 +56,15 @@ boolean turn=false;
 unsigned int Step=0;
 
 void setup(){
-  Grigoras.current_cell.x = 0;           // Start x position
-  Grigoras.current_cell.y = 15;          // Start y position
+  Grigoras.current_cell.x = 5;           // Start x position
+  Grigoras.current_cell.y = 10;          // Start y position
   Grigoras.current_cell.theta = ANGLE_90; // Starts pointing up
   Grigoras.current_cell.weight = 16;      // Start Cell weight
   Grigoras.track[Step] = Grigoras.current_cell;  //Stores current Step
   Grigoras.setupMMkit();                // Starts the MMkit
   Grigoras.goForward(18.0);              //distance to go forward in cm (18.0) means 18.0cm
-  Grigoras.setForwardMotionSpeed(500);  //sets forward speed
+  Grigoras.current_cell.y--;           //goes forward one cell
+  Grigoras.setForwardMotionSpeed(5);  //sets forward speed
   Grigoras.waitForStart();            // waits for hand passing front right sensors
 }
 
@@ -71,16 +72,14 @@ void loop(){
  if(Grigoras.running()==true) {
     if(turn==false){
       Grigoras.runSpeed();                //moves at the desired speed if not in turn
-      analogWrite(13,128);                //For debug
-    }
+     digitalWrite(13,LOW);                 //For debug
+  }
     else{
       Grigoras.run();                     //moves in turn
-      analogWrite(13,50);                 //For debug
     }   
   }
   else{
-    analogWrite(13,255);                 //For debug
-    turn=false;
+     turn=false;
     toMove = nextMove();
     robotMove();
 
@@ -150,7 +149,8 @@ void robotMove(void)
     stateMovement = STATE_MOV_FRONT;
     break;
   case STATE_MOV_UTURN:
-    Grigoras.rotate(-180.0);
+  turn=true;
+    Grigoras.rotate(180.0);
     // odometry
     switch (Grigoras.current_cell.theta) {
     case ANGLE_180:
@@ -285,6 +285,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     }
     if(Grigoras.current_cell.theta == ANGLE_0) {
@@ -296,6 +297,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     } 
     if(Grigoras.current_cell.theta == ANGLE_180){
@@ -307,6 +309,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     }
     if(Grigoras.current_cell.theta == ANGLE_270){
@@ -318,6 +321,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     }
   }                          //LRF
@@ -333,6 +337,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     }
     if(Grigoras.current_cell.theta == ANGLE_0) {
@@ -347,6 +352,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     } 
     if(Grigoras.current_cell.theta == ANGLE_180){
@@ -358,6 +364,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     }
     if(Grigoras.current_cell.theta == ANGLE_270){
@@ -369,6 +376,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     }
   }                            //LRF
@@ -381,6 +389,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     }
     if(Grigoras.current_cell.theta == ANGLE_0) {
@@ -389,6 +398,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     } 
     if(Grigoras.current_cell.theta == ANGLE_180){
@@ -397,6 +407,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     }
     if(Grigoras.current_cell.theta == ANGLE_270){
@@ -405,11 +416,13 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     }
   }                          //LRF
   if (Grigoras.current_cell.wall==B00000110){
     // odometry
+    
     Serial.println("Parede esquerda e direita");
     if(Grigoras.current_cell.theta == ANGLE_90){
       if(Map[Grigoras.current_cell.y-1][Grigoras.current_cell.x]<Grigoras.current_cell.weight){
@@ -417,6 +430,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     }
     if(Grigoras.current_cell.theta == ANGLE_0) {
@@ -425,6 +439,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     } 
     if(Grigoras.current_cell.theta == ANGLE_180){
@@ -433,14 +448,17 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     }
     if(Grigoras.current_cell.theta == ANGLE_270){
+      //digitalWrite(13,HIGH);  // for debug
       if(Map[Grigoras.current_cell.y+1][Grigoras.current_cell.x]<Grigoras.current_cell.weight){
         nMove = STATE_MOV_FRONT;
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     }
   }                          //LRF
@@ -456,6 +474,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     }
     if(Grigoras.current_cell.theta == ANGLE_0) {
@@ -467,6 +486,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     } 
     if(Grigoras.current_cell.theta == ANGLE_180){
@@ -478,6 +498,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     }
     if(Grigoras.current_cell.theta == ANGLE_270){
@@ -489,6 +510,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     }
   }                          //LRF
@@ -501,6 +523,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     }
     if(Grigoras.current_cell.theta == ANGLE_0) {
@@ -509,7 +532,8 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
-      }
+        nMove = STATE_MOV_IDLE;  
+    }
     } 
     if(Grigoras.current_cell.theta == ANGLE_180){
       if(Map[Grigoras.current_cell.y+1][Grigoras.current_cell.x]<Grigoras.current_cell.weight){
@@ -517,6 +541,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     }
     if(Grigoras.current_cell.theta == ANGLE_270){
@@ -525,6 +550,7 @@ unsigned char nextMove(void)
       }
       else{
         reMap();
+        nMove = STATE_MOV_IDLE;
       }
     }
   }                          //LRF  

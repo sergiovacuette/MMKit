@@ -33,12 +33,13 @@ enum statesRobotMovements {
 unsigned char stateMovement = STATE_MOV_FRONT;
 unsigned char toMove = STATE_MOV_FRONT;
 boolean turn=false;
-void setup(){
-  Grigoras.current_cell.x = 0;           // Start x position
-  Grigoras.current_cell.y = 15;          // Start y position
+void setup(){                            //start maze size  16;14;12;10; 8; 6; 4
+  Grigoras.current_cell.x = 5;           // Start x position 0; 1; 2; 3; 4; 5; 6
+  Grigoras.current_cell.y =10;          // Start y position 15;14;13;12;11;10; 9
   Grigoras.current_cell.theta = ANGLE_90; // Starts pointing up
   Grigoras.setupMMkit();                // Starts the MMkit
   Grigoras.goForward(18.0);              //distance to go forward in cm (18.0) means 18.0cm
+  Grigoras.current_cell.y--;           //goes forward one cell
   Grigoras.setForwardMotionSpeed(7);  //sets forward speed
   Grigoras.waitForStart();            // waits for hand passing front right sensors
 }
@@ -54,7 +55,7 @@ void loop(){
     }
   }
   else{
-    digitalWrite(13,HIGH);
+    digitalWrite(13,LOW);
     turn=false;
     toMove = nextMove(stateMovement);
     robotMove();
@@ -104,8 +105,9 @@ unsigned char nextMove(unsigned char State)
   unsigned char nMove=State;
   // middle of maze found
   if (((Grigoras.current_cell.x == 7) || (Grigoras.current_cell.x == 8)) && ((Grigoras.current_cell.y == 7) || (Grigoras.current_cell.y == 8))) {
+    if ((Grigoras.current_cell.x == 8)&&(Grigoras.current_cell.y == 8))digitalWrite(13,HIGH);
     return STATE_MOV_STOP;
-  }
+   }
   switch (Grigoras.current_cell.wall) {
     //LRF
   case B00000000:

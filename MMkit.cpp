@@ -40,8 +40,8 @@ boolean Running=false;
 
 int IRsensorsValues[4];
 int reading=0;
-int _right_Correction=0;//-60
-int _left_Correction=0;  //90
+int _right_Correction=-60;//-60
+int _left_Correction=90;  //90
 
 float _leftSpeed = 474.0; //default _leftSpeed 500
 float _rightSpeed = 474.0; //default _rightSpeed 500
